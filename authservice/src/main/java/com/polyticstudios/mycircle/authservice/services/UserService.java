@@ -6,6 +6,7 @@ import com.polyticstudios.mycircle.authservice.exceptions.UserAlreadyExistsExcep
 import com.polyticstudios.mycircle.authservice.mappers.UserDtoMapper;
 import com.polyticstudios.mycircle.authservice.repositories.UserRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -15,6 +16,7 @@ import java.util.Optional;
 public class UserService {
 
     private UserRepository userRepository;
+    private PasswordEncoder passwordEncoder;
 
     //---- User Registration
     public void registerUser(UserDto userDto) {
@@ -22,6 +24,7 @@ public class UserService {
         if (user.isPresent()) {
             throw new UserAlreadyExistsException();
         }
+        userDto.setPassword(passwordEncoder.encode(userDto.getPassword()));
         AppUser newUser = UserDtoMapper.mapUserDtoToUser(userDto, new AppUser());
         userRepository.save(newUser);
     }
